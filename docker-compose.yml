@@ -9,10 +9,17 @@ services:
     networks:
       - appnet
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost/up"]
-      interval: 30s
+      # Option 1: Check if PHP-FPM is listening on port 9000
+      test: ["CMD", "sh", "-c", "nc -z localhost 9000 || exit 1"]
+      interval: 10s # Check more frequently since it's a direct service check
       timeout: 3s
-      retries: 3
+      retries: 5
+      start_period: 20s
+    # healthcheck:
+    #   test: ["CMD", "curl", "-f", "http://localhost/up"]
+    #   interval: 30s
+    #   timeout: 3s
+    #   retries: 3
 
   nginx:
     image: nginx:alpine
