@@ -40,7 +40,7 @@ services:
       - appnet
 
   horizon:
-    image: infinibrium:${TAG:-latest}
+    image: vecitech/infinibrium:${TAG:-latest}
     restart: unless-stopped
     env_file:
       - .env.${ENV:-production}
