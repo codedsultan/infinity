@@ -9,12 +9,13 @@ services:
     networks:
       - appnet
     healthcheck:
-      # Option 1: Check if PHP-FPM is listening on port 9000
-      test: ["CMD", "sh", "-c", "nc -z localhost 9000 || exit 1"]
-      interval: 10s # Check more frequently since it's a direct service check
-      timeout: 3s
-      retries: 5
-      start_period: 20s
+      # Use the image's built-in healthcheck script
+      test: ["CMD", "php-fpm-healthcheck"]
+      interval: 10s # Check more frequently
+      timeout: 5s   # Give it a bit more time if needed
+      retries: 5    # Number of retries before marking unhealthy
+      start_period: 30s # Give the container plenty of time to warm up before checks count
+
     # healthcheck:
     #   test: ["CMD", "curl", "-f", "http://localhost/up"]
     #   interval: 30s
@@ -59,6 +60,12 @@ services:
       - storage:/var/www/html/infinibrium/storage
     networks:
       - appnet
+    healthcheck:
+      test: ["CMD", "healthcheck-horizon"] # The command you provided
+      interval: 10s # Check frequently
+      timeout: 5s   # Give it time
+      retries: 5    # Number of retries
+      start_period: 60s
 
 volumes:
   storage:
