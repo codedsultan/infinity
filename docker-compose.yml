@@ -43,10 +43,19 @@ services:
     image: redis:7-alpine
     restart: unless-stopped
     command: ["redis-server", "--save", "60", "1", "--loglevel", "warning"]
+    # command: ["redis-server", "--requirepass", "${REDIS_PASSWORD}", "--save", "60", "1", "--loglevel", "warning"]
     volumes:
       - redis-data:/data
     networks:
       - appnet
+    # Add this healthcheck
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      # test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
 
   horizon:
     image: vecitech/infinibrium:${TAG:-latest}
@@ -54,9 +63,12 @@ services:
     env_file:
       - .env.${ENV:-production}
     depends_on:
-      - redis
-      - php
-    command: ["php", "artisan", "horizon"]
+      redis:
+        condition: service_healthy
+      php:
+        condition: service_healthy
+    # command: ["php", "artisan", "horizon"]
+    command: ["php", "/var/www/html/infinibrium/artisan", "horizon"]
     volumes:
       - storage:/var/www/html/infinibrium/storage
     networks:
