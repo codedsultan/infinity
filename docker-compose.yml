@@ -5,6 +5,7 @@ services:
     env_file:
       - .env.${ENV:-production}
     volumes:
+      - .:/var/www/html/infinibrium  # Mount the local directory to the container to share with nginx
       - storage:/var/www/html/infinibrium/storage
     networks:
       - appnet
@@ -33,6 +34,7 @@ services:
       - '443:443'
     volumes:
       # - ./docker/nginx.conf:/etc/nginx/nginx.conf:ro
+      - .:/var/www/html/infinibrium  # Mount the local directory to the container
       - ./docker/default.conf:/etc/nginx/conf.d/default.conf:ro
       - /etc/ssl:/etc/ssl:ro
       - storage:/var/www/html/infinibrium/public/storage:ro
